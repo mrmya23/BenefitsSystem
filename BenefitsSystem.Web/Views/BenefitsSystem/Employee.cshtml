@@ -1,0 +1,158 @@
+﻿@using  BenefitsSystem.Web.ViewModels
+@model BenefitsSystem.Web.ViewModels.EmployeeViewModel
+@{
+    ViewData["Title"] = "Paylocity Benefits System - Employee Details";
+    var employee = ViewData.Model;
+}
+<div class="card">
+    <div class="card-header">
+        <h3>@employee.FirstName @employee.MiddleName @employee.LastName</h3>
+        <div class="row">
+            <div class="col-md-8">
+                <h6>Employee ID: @employee.Id</h6>                
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="text-center">
+            <h4>Benefits Cost Summary</h4>
+        </div>
+        <br />
+        <br />
+
+        <div class="row">
+
+            <table id="tblEmployeeCost" class="table table-striped">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>
+                            Item
+                        </th>
+                        <th class="text-right">
+                            Per Paycheck
+                        </th>
+
+                        <th class="text-right">
+                            Per Year
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            Employee Benefit Cost
+                        </td>
+                        <td class="text-right">
+                            @String.Format("{0:c}", @employee.BenefitsCostPerPayCheck, 2)
+                        </td>
+
+                        <td class="text-right">
+                            @String.Format("{0:c}", @employee.BenefitsCostPerYear, 2)
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>
+                            Dependant Benefit Cost
+                        </td>
+                        <td class="text-right">
+                            @String.Format("{0:c}", @employee.BenefitsTotal.DependantBenefitCostPerPayCheck, 2)
+                        </td>
+
+                        <td class="text-right">
+                            @String.Format("{0:c}", @employee.BenefitsTotal.DependantBenefitCostPerYear, 2)
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>
+                            Total Benefit Cost
+                        </td>
+                        <td class="text-right">
+                            @String.Format("{0:c}", @employee.BenefitsTotal.TotalBenefitCostPerPayCheck, 2)
+                        </td>
+
+                        <td class="text-right">
+                            @String.Format("{0:c}", @employee.BenefitsTotal.TotalBenefitCostPerYear, 2)
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>
+                            Gross Salary
+                        </td>
+                        <td class="text-right">
+                            @String.Format("{0:c}", @employee.BenefitsTotal.PayPerPaycheck, 2)
+                        </td>
+
+                        <td class="text-right">
+                            @String.Format("{0:c}", @employee.BenefitsTotal.PayPerYear, 2)
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>
+                            Net Salary after deductions
+                        </td>
+                        <td class="text-right">
+                            @String.Format("{0:c}", @employee.BenefitsTotal.NetPayPerPaycheck, 2)
+                        </td>
+
+                        <td class="text-right">
+                            @String.Format("{0:c}", @employee.BenefitsTotal.NetPayPerYear, 2)
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <br /><br />
+        <b>Dependant Details</b>
+        <div class="row">
+            <table id="tblDependants" class="table table-striped">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>
+                            Dependant Name
+                        </th>
+                        <th>
+                            Relationship
+                        </th>
+                        <th class="text-right">Cost Per PayCheck</th>
+                        <th class="text-right">Cost Per Year</th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                    @foreach (var dependant in @employee.DependantList)
+                    {
+                        <tr>
+                            <td>
+                                @dependant.FirstName @dependant.MiddleName @dependant.LastName
+                            </td>
+                            <td>
+                                @dependant.Relationship
+                            </td>
+                            <td class="text-right">
+                                @String.Format("{0:c}", @dependant.BenefitsCostPerPayCheck, 2)
+
+                            </td>
+                            <td class="text-right">
+                                @String.Format("{0:c}", @dependant.BenefitsCostPerYear, 2)
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        <br /><br />
+        <div class=" col-md-12 text-center">
+            <a asp-action="Dependants" asp-route-id="@employee.Id">
+                <input class="btn-dark" type="button" id="btnUpdateDependants" value="Edit Dependants" />
+            </a>
+            &nbsp; &nbsp;
+            <a asp-action="Index"><input class="btn-dark" type="button" id="btnListEmployee" value="Back to Search" /></a>
+        </div>
+    </div>
+</div>
+
+

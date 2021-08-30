@@ -1,0 +1,51 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Benefits System</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" />
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+</head>
+<body>
+    <header>        
+        <nav class="navbar navbar-expand-sm bg-light">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <a class="navbar-brand" asp-controller="BenefitsSystem" asp-action="Index">Paylocity Benefits System</a>
+                </div>
+                <ul class="navbar-nav navbar-right">
+
+                    <li class="nav-item">
+                        <form class="form-inline" asp-controller="BenefitsSystem" asp-action="Index" method="get">
+                            <div class="input-group">
+                                <input class="form-control mr-sm-2 w-60" name="searchName" placeholder="Search by name...">
+                                <button class="btn btn-dark" type="submit">Search</button>
+                            </div>
+                        </form>
+
+                    </li>
+                </ul>
+            </div>
+
+        </nav>
+        <br>
+    </header>
+    <div class="container">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="border-top footer text-muted">
+        <div class="container">
+            &copy; 2021 - Ramya Manian - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+        </div>
+    </footer>
+    
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

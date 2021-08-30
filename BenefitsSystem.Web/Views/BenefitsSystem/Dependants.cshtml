@@ -1,0 +1,177 @@
+﻿@using  BenefitsSystem.Web.ViewModels
+@model BenefitsSystem.Web.ViewModels.EmployeeViewModel
+@{
+    ViewData["Title"] = "Paylocity Benefits System - Employee Dependant Details";
+    var employee = ViewData.Model;
+}
+<div class="card">
+    <div class="card-header">
+        <h3>@employee.FirstName @employee.MiddleName @employee.LastName</h3>
+        <div class="row">
+            <div class="col-md-8">
+                <h6>Employee ID: @employee.Id</h6>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+
+        <br />
+        <br />
+
+        <div class="row">
+            <table id="tblDependants" class="table table-striped">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>
+                            Dependant Name
+                        </th>
+                        <th>
+                            Relationship
+                        </th>
+
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                    @foreach (var dependant in @employee.DependantList)
+                    {
+                        <tr>
+                            <td>
+                                @dependant.FirstName @dependant.MiddleName @dependant.LastName
+                            </td>
+                            <td>
+                                @dependant.Relationship
+                            </td>
+                            <td class="text-right">
+
+                                <a class="delete" data-model-id="@dependant.Id" href="#">Delete</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        <div class="card-body">
+            <br /><hr /><br />
+            <fieldset>
+                <div class="row">
+                    <div class=" col-md-4">
+                        First Name  <input type="text" id="txtFName" />
+                    </div>
+                    <div class=" col-md-4">
+                        Middle Name <input type="text" id="txtMName" />
+                    </div>
+                    <div class=" col-md-4">
+                        Last Name <input type="text" id="txtLName" />
+                    </div>
+
+                </div> <br />
+                <div class="row">
+                    <div class=" col-md-6">
+                        Relationship
+                        <!--@Html.DropDownList("ddlRelationship",new SelectList(Enum.GetValues(typeof(Constants.DependantType))),"Select")-->
+                        <select id="ddlRelationship" name="ddlRelationship">
+                            <option value="0">Spouse</option>
+                            <option value="1" selected>Child</option>
+                        </select>
+
+                    </div>
+                </div><br />
+
+                <div class=" col-md-12 text-right">
+                    <input class="btn-dark" type="button" id="btnAddDependant" value="Add Dependant" />
+
+                    <!-- <a asp-action="Employee" asp-route-id="@employee.Id">Add Dependant</a>-->
+                </div>
+
+            </fieldset>
+            <br /><br />
+            <div class=" col-md-12 text-center">
+                <a asp-action="Employee" asp-route-id="@employee.Id">
+                    <input class="btn-dark" type="button" id="btnViewDetails" value="View Benefit Cost" />
+                </a>
+                &nbsp; &nbsp;
+                <a asp-action="Index"><input class="btn-dark" type="button" id="btnListEmployee" value="Back to Search" /></a>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $.ajaxSetup({
+            error: function (x, e) {
+                if (x.status == 0) {
+                    alert(' Check Your Network.');
+                }
+                else if (x.status == 404) {
+                    alert('Requested URL not found.');
+
+                } else if (x.status == 500 ) {
+                    alert('Internel Server Error.' + x.responseText);
+                } else {
+                    alert('Unknown Error.\n' + x.responseText + x.statusCode);
+                }
+            }
+        });
+
+        $(document).on("click", "a.delete",function () {
+
+            var row = $(this).closest("TR");
+            var name = $("TD", row).eq(0).text();
+            var id = $(this).attr("data-model-id");
+            var employeeId = @employee.Id;
+            if (confirm("Are you sure you want to delete dependant? " + name)) {
+                $.ajax({
+                    url: '@Url.Action("DeleteDependant", "BenefitsSystem")',
+                    data: { id: id, employeeId: employeeId },
+                    type: "POST",
+                    success: function (response) {
+                        row.remove();
+                    },
+
+                });
+            }
+        })
+
+        $("#btnAddDependant").click(function () {
+            $.ajax(
+                {
+                    type: "POST",
+                    url: '@Url.Action("AddDependant", "BenefitsSystem")',
+                    data: {
+                        FirstName: $("#txtFName").val(),
+                        MiddleName: $("#txtMName").val(),
+                        LastName: $("#txtLName").val(),
+                        EmployeeID: @employee.Id,
+                        Relationship: $('#ddlRelationship').val()
+                    },
+
+                    success: function (response) {
+                        
+                        $( '<tr> <td>' +
+                            $("#txtFName").val() + ' ' + $("#txtMName").val() + ' ' + $("#txtLName").val() +
+                            '</td>' +
+                            '<td>' +
+                                $('#ddlRelationship option:selected').text() +
+                            '</td>' +
+                            '<td class="text-right">' +
+                            '<a class="delete" data-model-id="' + response.id + '" href="#">Delete</a>' + //BUG: This delete does not pass data model id value;
+                            '</td></tr>'
+                        ).appendTo('#tblDependants')
+
+
+                        $('#txtFName').val("");
+                        $('#txtMName').val("");
+                        $('#txtLName').val("");
+                        $('#ddlRelationshion').val(1);
+                    },
+                });
+
+        });
+
+
+    });
+</script>

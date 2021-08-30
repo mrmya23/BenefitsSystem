@@ -1,0 +1,150 @@
+﻿@model IEnumerable<BenefitsSystem.Web.ViewModels.EmployeeViewModel>
+
+@{
+    ViewData["Title"] = "Paylocity Benefits System - Employee Search";
+}
+
+<div class="card-body">
+    <br /><hr /><br />
+    <fieldset>
+        <div class="row">
+            <div class=" col-md-4">
+                First Name  <input type="text" id="txtFName" required="required" />
+            </div>
+            <div class=" col-md-4">
+                Middle Name <input type="text" id="txtMName" />
+            </div>
+
+            <div class=" col-md-4">
+                Last Name <input type="text" id="txtLName" required="required" />
+            </div>
+
+        </div> <br />
+        
+        <div class=" col-md-12 text-center">
+            <input class="btn-dark" type="button" id="btnAddEmployee" value="Add Employee" />
+        </div>
+    </fieldset>
+</div>
+<div>
+    <table id="tblEmployees" class="table table-striped">
+        <thead class="table-dark">
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.Id)
+
+                </th>
+                <th>
+                    Employee
+                </th>
+
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model != null)
+            {
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            @item.Id
+                        </td>
+                        <td>
+                            @item.FirstName @item.MiddleName @item.LastName
+                        </td>
+
+                        <td class="text-right">
+                            <div id="actionsdiv">
+                                <a asp-action="Dependants" asp-route-id="@item.Id">Edit Dependants</a> |
+                                <a asp-action="Employee" asp-route-id="@item.Id">View Details</a> |
+                                <a class="delete" data-model-id="@item.Id" href="#">Delete</a>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $.ajaxSetup({
+            error: function (x, e) {
+                if (x.status == 0) {
+                    alert(' Check Your Network.');
+                }
+                else if (x.status == 404) {
+                    alert('Requested URL not found.');
+
+                } else if (x.status == 500) {
+                    alert('Internel Server Error.' + x.responseText);
+                }
+                //} else {
+                //    alert('Unknown Error.\n' + x.responseText);
+                //}
+            }
+        });
+
+        $(document).on("click", "#tblEmployees #actionsdiv a.delete", function () {
+        //$("#tblEmployees #actionsdiv a.delete").click(function () {
+
+            var row = $(this).closest("TR");
+            var name = $("TD", row).eq(1).text();
+
+            if (confirm("Are you sure you want to delete employee?" + name)) {
+
+                var id = $(this).data("model-id");
+
+                $.ajax({
+                    url: '@Url.Action("DeleteEmployee", "BenefitsSystem")',
+                    data: { id: id },
+                    async: true,
+                    type: "post",
+                    success: function () {
+                        row.remove();
+                    },
+
+                });
+            }
+        })
+
+        $("#btnAddEmployee").click(function () {
+            $.ajax(
+                {
+                    type: "POST",
+                    url: '@Url.Action("AddEmployee", "BenefitsSystem")',
+                    data: {
+                        FirstName: $("#txtFName").val(),
+                        MiddleName: $("#txtMName").val(),
+                        LastName: $("#txtLName").val()
+                    },
+
+                    success: function (response) {
+                            $('<tr> <td>' +
+                            response.id +
+                            '</td><td>' +
+                            $("#txtFName").val() + ' ' + $("#txtMName").val() + ' ' + $("#txtLName").val() +
+                            '</td>' +
+                            '<td class="text-right">' +
+                                '<div id="actionsdiv">' +
+                                '<a href="/Dependants/' + response.id +'">Edit Dependants</a> | '+
+                            '<a href="/Employee/' + response.id +'">View Details</a> |' +
+                            '<a class="delete" data-model-id="' + response.id + '" href="#">Delete</a>' +
+                             '</div>' + //BUG: This delete does not pass data model id value;
+                            '</td></tr>'
+                        ).appendTo('#tblEmployees')
+
+
+                        $('#txtFName').val("");
+                        $('#txtMName').val("");
+                        $('#txtLName').val("");
+
+                    },
+                });
+
+        });
+
+    });
+</script>

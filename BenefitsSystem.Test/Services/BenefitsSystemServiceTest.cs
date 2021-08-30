@@ -85,7 +85,7 @@ namespace BenefitsSystem.Test.Services
 
         [Theory(DisplayName = "GetEmployeeDetailsAsync: Returns Employee with given ID when repo returns successfully.")]
         [MemberData(nameof(TestDataGenerator.GetEmployeeNoNameStartingWithA), MemberType = typeof(TestDataGenerator))]
-        public async Task GetEmployeeDetailsAsync_ReturnsListOfEmployees(List<Employee> testEmployee)
+        public async Task GetEmployeeDetailsAsync_ReturnsEmployeeInfo(List<Employee> testEmployee)
         {
             //Arrange
             BenefitsSystemService service = new BenefitsSystemService(mapper, repository.Object, calculator.Object, logger.Object);
@@ -110,6 +110,37 @@ namespace BenefitsSystem.Test.Services
             Assert.Equal(testEmployee[0].LastName, employeeVM.LastName);
         }
 
+        #endregion
+
+        #region GetEmployeeDependantAsync
+
+        [Theory(DisplayName = "GetEmployeeDependantsAsync: Returns all dependants for a given employee with given ID when repo returns successfully.")]
+        [MemberData(nameof(TestDataGenerator.GetEmployeeNoNameStartingWithA), MemberType = typeof(TestDataGenerator))]
+        public async Task GetEmployeeDependantsAsync_ReturnsListOfDependants(List<Employee> testEmployee)
+        {
+            //Arrange
+            BenefitsSystemService service = new BenefitsSystemService(mapper, repository.Object, calculator.Object, logger.Object);
+            
+            repository.Setup(y => y.GetEmployeeDetailsAsync(It.IsAny<int>())).ReturnsAsync(testEmployee[0]);
+
+            ////Act
+            EmployeeViewModel employeeVM = await service.GetEmployeeDependantsAsync(testEmployee[0].Id);
+            ////Assert
+            Assert.True(employeeVM != null);
+            Assert.Equal(testEmployee[0].Id, employeeVM.Id);
+            Assert.Equal(testEmployee[0].FirstName, employeeVM.FirstName);
+            Assert.Equal(testEmployee[0].MiddleName, employeeVM.MiddleName);
+            Assert.Equal(testEmployee[0].LastName, employeeVM.LastName);
+
+            Assert.True(employeeVM.DependantList.Count == testEmployee[0].DependantList.Count);
+            for (int i=0; i< employeeVM.DependantList.Count; i++)
+            {
+                Assert.True(employeeVM.DependantList[i].FirstName == testEmployee[0].DependantList[i].FirstName);
+                Assert.True(employeeVM.DependantList[i].LastName == testEmployee[0].DependantList[i].LastName);
+                Assert.True(employeeVM.DependantList[i].MiddleName == testEmployee[0].DependantList[i].MiddleName);
+                Assert.True(employeeVM.DependantList[i].Relationship.ToString() == testEmployee[0].DependantList[i].Relationship.ToString());
+            }
+        }
         #endregion
     }
 }

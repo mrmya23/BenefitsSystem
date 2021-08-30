@@ -16,6 +16,12 @@ CREATE TABLE [dbo].[Employees](
 ) ON [PRIMARY]
 GO
 
+CREATE INDEX idx_employees_fname 
+ON employees(FirstName);
+
+CREATE INDEX idx_employees_lname 
+ON employees(LastName);
+
 CREATE TABLE [dbo].[Dependants](
 	[Id] [int] IDENTITY(1,1) NOT NULL,
 	[FirstName] [nvarchar](150) NOT NULL,

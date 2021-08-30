@@ -46,10 +46,5 @@ Projects included in the solution:
 2. BenefitsSystem.Web : Web application which includes the controller class and services to connect to repository.
 3. BenefitsSystem.Tests: Test cases written using XUnit and Moq. 
  
-Notes:
-------
-Due to time constraints
-1. A very basic version of the application has been developed to demonstrate the overall flow.
-2. Only limited test cases have been included to demonstrate the purpose with focus on BenefitsSystemCalculatorService, for which multiple scenarious were validated.  
 
 
